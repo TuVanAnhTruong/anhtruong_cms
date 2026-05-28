@@ -1,32 +1,29 @@
-using CMS.Backend.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using CMS.Data;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
+            // LINQ: L?y 3 bài vi?t m?i nh?t
+            var latestPosts = _context.Posts
+                              .Include(p => p.Category) // L?y kèm tên danh m?c
+                              .OrderByDescending(p => p.CreatedDate) // M?i nh?t lên ??u
+                              .Take(3) // L?y 3 bài vi?t
+                              .ToList();
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(latestPosts);
         }
     }
 }
