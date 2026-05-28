@@ -3,6 +3,9 @@
 @{
     Layout = "_LayoutAdmin";
 }
+<a asp-action="Create" class="btn btn-success">
+    <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+</a>
 <h2 class="text-primary">DANH SÁCH SẢN PHẨM (DỮ LIỆU MẪU)</h2>
 <table class="table table-bordered">
     <thead>
@@ -14,6 +17,7 @@
             <th>Số lượng kho</th>
             <th>Ảnh</th>
             <th>CategoryProductId</th>
+            <th>Thao Tác</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +31,21 @@
                 <td>@item.StockQuantity</td>
                 <td><img src="@item.ImageUrl" alt="Product Image" style="width: 100px; height: auto;"></td>
                 <td>@item.CategoryProductId</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning btn-sm">
+
+                        Sửa
+                    </a>
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
+
+                        Xóa
+                    </a>
+                </td>
             </tr>
         }
     </tbody>
