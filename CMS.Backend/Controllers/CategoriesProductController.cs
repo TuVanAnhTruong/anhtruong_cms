@@ -52,7 +52,7 @@ namespace CMS.Backend.Controllers
             if (pro == null)
             {
                 // Trả về lỗi 404 kèm thông báo dưới dạng JSON
-                return NotFound(new { message = "Không tìm thấy bài viết này trong hệ thống" });
+                return NotFound(new { message = "Không tìm thấy danh mục sản phẩm này trong hệ thống" });
             }
 
             // 4. Trả về bài viết tìm thấy kèm mã 200 (Thành công)
