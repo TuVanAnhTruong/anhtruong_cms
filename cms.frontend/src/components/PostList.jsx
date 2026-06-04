@@ -2,6 +2,7 @@
 import blogService from '../services/blogService';
 
 const PostList = () => {
+    const API_URL = "https://localhost:7284";
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -39,6 +40,11 @@ const PostList = () => {
                         <div className="col-12 mb-3" key={post.id}>
                             <div className="card shadow-sm border-light">
                                 <div className="card-body">
+                                    <img
+                                        src={`${API_URL}${post.imageUrl}`}
+                                        alt={post.name}
+                                        style={{ width: '300px', height: 'auto' }}
+                                    />
                                     <h5 className="card-title font-weight-bold">
                                         <a href={`/post/${post.id}`} className="text-dark text-decoration-none hover-link">
                                             {post.title}
