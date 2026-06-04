@@ -1,3 +1,8 @@
+/*
+ * Ho va ten: Tu Van Anh Truong
+ * Mssv: 2123110486
+ * Ngay tao: 28/05/2026
+ */
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;

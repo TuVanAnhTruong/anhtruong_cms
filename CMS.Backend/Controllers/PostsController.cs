@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * Ho va ten: Tu Van Anh Truong
+ * Mssv: 2123110486
+ * Ngay tao: 29/05/2026
+ */
 using CMS.Data; // Thay bằng Namespace của project chứa ApplicationDbContext của bạn
+using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
@@ -22,14 +27,15 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-    // 1. Chỉ định đây là phương thức GET (Dùng để lấy dữ liệu)
-[HttpGet]
+        // 1. Chỉ định đây là phương thức GET (Dùng để lấy dữ liệu)
+        [HttpGet]
         public IActionResult GetAll()
         {
             // Lấy dữ liệu từ bảng Posts
             var posts = _context.Posts
                 .OrderByDescending(p => p.Id) // Sắp xếp bài mới nhất lên đầu
-                .Select(p => new {            // "Gọt tỉa" dữ liệu: chỉ lấy những trường cần thiết
+                .Select(p => new
+                {            // "Gọt tỉa" dữ liệu: chỉ lấy những trường cần thiết
                     p.Id,
                     p.Title,
                     p.Content,
@@ -50,7 +56,8 @@ namespace CMS.Backend.Controllers
             // Lọc các bài viết có CategoryId trùng với ID truyền vào từ URL
             var posts = _context.Posts
                 .Where(p => p.CategoryId == categoryId)
-                .Select(p => new {
+                .Select(p => new
+                {
                     p.Id,
                     p.Title,
                     p.Content,
@@ -80,5 +87,7 @@ namespace CMS.Backend.Controllers
             // 4. Trả về bài viết tìm thấy kèm mã 200 (Thành công)
             return Ok(post);
         }
+
+
     }
 }
