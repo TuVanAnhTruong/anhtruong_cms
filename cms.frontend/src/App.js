@@ -1,9 +1,13 @@
-﻿import React from 'react';
-import CategoryProductList from './components/CategoryProductList';
+﻿import CategoryProductList from './components/CategoryProductList';
 import ProductList from './components/ProductList';
 import PostList from './components/PostList'; // Nhớ thêm dòng import này để kích hoạt phần tin tức
-
-function App() {
+import BlogCategoryList from './components/BlogCategoryList';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ProductDetail from './components/ProductDetail';
+import PostDetail from './components/PostDetail';
+import React, { useState } from 'react';
+function HomePage() {
+    const [selectedCategory, setSelectedCategory] = useState(null);
     return (
         <div className="container mt-5">
             <header className="pb-3 mb-4 border-bottom">
@@ -15,11 +19,16 @@ function App() {
             {/* KHU VỰC 1: SHOPPING (Sản phẩm và Bộ lọc danh mục sản phẩm) */}
             <div className="row">
                 <div className="col-md-4">
-                    <CategoryProductList />
+                    <CategoryProductList
+                        onSelectCategory={setSelectedCategory}
+                    />
+                    <BlogCategoryList /> {/* Thêm chuyên mục tin tức vào sidebar bên trái */}
                 </div>
                 <div className="col-md-8">
                     <h4 className="mb-4 text-uppercase text-secondary font-weight-bold">Bộ sưu tập mới nhất</h4>
-                    <ProductList />
+                    <ProductList
+                        categoryId={selectedCategory}
+                    />
                 </div>
             </div>
 
@@ -32,5 +41,15 @@ function App() {
         </div>
     );
 }
-
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/post/:id" element={<PostDetail />} />
+            </Routes>
+        </BrowserRouter>
+    );
+}
 export default App;

@@ -1,26 +1,48 @@
 ﻿import React, { useState, useEffect } from 'react';
 import productService from '../services/productService';
-
-const ProductList = () => {
+import { useNavigate } from 'react-router-dom';
+const ProductList = ({ categoryId }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    //useEffect(() => {
+    //    const fetchProducts = async () => {
+    //        try {
+    //            setLoading(true);
+    //            const data = await productService.getAllProducts();
+    //            setProducts(data);
+    //        } catch (error) {
+    //            console.error("L?i khi t?i danh sách s?n ph?m:", error);
+    //        } finally {
+    //            setLoading(false);
+    //        }
+    //    };
 
+    //    fetchProducts();
+    //}, []);
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const data = await productService.getAllProducts();
+
+                let data;
+
+                if (categoryId) {
+                    data = await productService.getProductsByCategory(categoryId);
+                } else {
+                    data = await productService.getAllProducts();
+                }
+
                 setProducts(data);
             } catch (error) {
-                console.error("L?i khi t?i danh sách s?n ph?m:", error);
+                console.error(error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
-
+    }, [categoryId]);
     if (loading) {
         return <div className="text-center my-4">?ang t?i danh sách s?n ph?m th?i trang...</div>;
     }
@@ -48,8 +70,12 @@ const ProductList = () => {
                                 <p className="card-text small text-muted">Số lượng tồn kho: {item.stockQuantity} sản phẩm</p>
                             </div>
                             <div className="card-footer bg-transparent border-top-0">
-                                <button className="btn btn-outline-primary btn-block btn-sm">
-                                    <i className="fa-solid fa-cart-plus mr-1"></i> Xem chi tiết
+                                <button
+                                    className="btn btn-outline-primary btn-block btn-sm"
+                                    onClick={() => navigate(`/product/${item.id}`)}
+                                >
+                                    <i className="fa-solid fa-eye mr-1"></i>
+                                    Xem chi tiết
                                 </button>
                             </div>
                         </div>
