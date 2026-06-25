@@ -293,3 +293,50 @@ Kết quả:
 * Hiểu và áp dụng hiệu quả mô hình làm việc của Entity Framework Core.
 * Hoàn thiện nền tảng dữ liệu cho các module quản trị nội dung của hệ thống CMS.
 
+Buổi 3 – Phát triển chức năng quản lý dữ liệu với LINQ và Entity Framework Core
+Mô tả
+
+Triển khai các chức năng truy vấn và quản lý dữ liệu cho hệ thống CMS bằng Entity Framework Core và LINQ, đồng thời hoàn thiện các thao tác CRUD cho module Danh mục và Bài viết.
+
+Chức năng đã thực hiện
+Truy vấn dữ liệu với LINQ
+Xây dựng các truy vấn lọc dữ liệu bằng Where().
+Thực hiện sắp xếp dữ liệu bằng OrderBy() và OrderByDescending().
+Truy xuất bản ghi đơn bằng FirstOrDefault().
+Triển khai chức năng lọc bài viết theo danh mục thông qua tham số URL.
+Xử lý quan hệ dữ liệu
+Áp dụng kỹ thuật Eager Loading với Include().
+Thực hiện truy vấn dữ liệu liên kết giữa:
+Post và Category
+Product và CategoryProduct
+Order và Customer
+Hiển thị thông tin từ các bảng liên quan trên giao diện mà không phát sinh lỗi dữ liệu null.
+Xây dựng chức năng xem chi tiết bài viết
+Truy vấn dữ liệu theo khóa chính.
+Kết hợp dữ liệu từ bảng liên quan.
+Xử lý trường hợp dữ liệu không tồn tại bằng cơ chế trả về lỗi 404.
+Xây dựng chức năng thêm dữ liệu
+Thiết kế giao diện nhập liệu bằng Razor View.
+Tiếp nhận dữ liệu từ Form thông qua HTTP POST.
+Lưu dữ liệu xuống SQL Server bằng Entity Framework Core.
+Xây dựng chức năng cập nhật dữ liệu
+Hiển thị dữ liệu hiện tại lên Form chỉnh sửa.
+Cập nhật dữ liệu thông qua phương thức Update().
+Đồng bộ thay đổi xuống cơ sở dữ liệu bằng SaveChanges().
+Xây dựng chức năng xóa dữ liệu
+Tìm kiếm đối tượng theo khóa chính.
+Thực hiện xóa dữ liệu bằng Remove().
+Bổ sung xác nhận xóa bằng JavaScript nhằm hạn chế thao tác nhầm.
+Công nghệ sử dụng
+ASP.NET Core MVC
+Entity Framework Core
+LINQ
+SQL Server
+Razor View Engine
+Bootstrap 5
+Kết quả đạt được
+Hoàn thiện quy trình CRUD cho module quản lý danh mục.
+Thực hiện truy vấn dữ liệu động từ SQL Server thông qua LINQ.
+Xử lý hiệu quả dữ liệu liên kết giữa các bảng bằng Entity Framework Core.
+Xây dựng nền tảng dữ liệu phục vụ cho các chức năng quản lý bài viết, sản phẩm và đơn hàng trong hệ thống CMS.
+
