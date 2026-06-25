@@ -93,3 +93,78 @@ Kết nối database thật (SQL Server)
 Tích hợp API
 CRUD hoàn chỉnh
 Phân trang + tìm kiếm + phân quyền
+
+# Buổi 2 – Tích hợp Entity Framework Core và xây dựng cơ sở dữ liệu
+
+## Mục tiêu
+
+Xây dựng tầng truy cập dữ liệu cho hệ thống CMS bằng Entity Framework Core, kết nối thành công với SQL Server và chuyển đổi từ dữ liệu giả (Mock Data) sang dữ liệu thực được lưu trữ trong cơ sở dữ liệu.
+
+## Công việc thực hiện
+
+### 1. Cài đặt và cấu hình Entity Framework Core
+
+* Tích hợp các thư viện:
+
+  * Microsoft.EntityFrameworkCore.SqlServer
+  * Microsoft.EntityFrameworkCore.Tools
+  * Microsoft.EntityFrameworkCore.Design
+* Thiết lập môi trường làm việc giữa ASP.NET Core MVC và SQL Server.
+
+### 2. Xây dựng ApplicationDbContext
+
+* Thiết kế lớp ApplicationDbContext làm trung tâm quản lý dữ liệu.
+* Khai báo các DbSet tương ứng với các bảng:
+
+  * Categories
+  * Posts
+  * Users
+  * CategoriesProducts
+  * Products
+  * Customers
+  * Orders
+  * OrderDetails
+
+### 3. Cấu hình kết nối cơ sở dữ liệu
+
+* Thiết lập Connection String trong appsettings.json.
+* Đăng ký DbContext trong Program.cs thông qua Dependency Injection.
+* Kết nối thành công ứng dụng với SQL Server.
+
+### 4. Áp dụng Code First Migration
+
+* Sử dụng phương pháp Code First để sinh cơ sở dữ liệu từ các lớp Entity.
+* Tạo Migration đầu tiên bằng lệnh:
+
+  * Add-Migration InitialCreate
+* Khởi tạo Database và các bảng dữ liệu bằng lệnh:
+
+  * Update-Database
+
+### 5. Thay thế Mock Data bằng dữ liệu thực
+
+* Refactor các Controller từ việc sử dụng danh sách dữ liệu giả sang truy vấn trực tiếp từ SQL Server thông qua Entity Framework Core.
+* Áp dụng cho các module:
+
+  * Quản lý danh mục bài viết
+  * Quản lý bài viết
+  * Quản lý sản phẩm
+  * Quản lý người dùng
+
+## Kết quả đạt được
+
+* Xây dựng thành công cơ sở dữ liệu SQL Server theo mô hình Code First.
+* Thiết lập hoàn chỉnh tầng truy cập dữ liệu bằng Entity Framework Core.
+* Thực hiện truy vấn dữ liệu thực thông qua DbContext.
+* Hoàn thiện nền tảng cho các chức năng CRUD ở các giai đoạn tiếp theo.
+* Tăng khả năng mở rộng và bảo trì hệ thống nhờ áp dụng kiến trúc phân lớp (Data Layer – Business Layer – Presentation Layer).
+
+## Công nghệ sử dụng
+
+* ASP.NET Core MVC
+* Entity Framework Core
+* SQL Server
+* LINQ
+* Dependency Injection
+* Code First Migration
+
