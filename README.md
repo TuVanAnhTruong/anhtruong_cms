@@ -340,3 +340,108 @@ Thực hiện truy vấn dữ liệu động từ SQL Server thông qua LINQ.
 Xử lý hiệu quả dữ liệu liên kết giữa các bảng bằng Entity Framework Core.
 Xây dựng nền tảng dữ liệu phục vụ cho các chức năng quản lý bài viết, sản phẩm và đơn hàng trong hệ thống CMS.
 
+Buổi 5: Xây dựng hệ thống xác thực và phân quyền người dùng
+Mục tiêu
+
+Trong giai đoạn này, tôi triển khai cơ chế bảo mật cho hệ thống CMS bằng ASP.NET Core MVC, bao gồm chức năng đăng nhập, đăng xuất, xác thực người dùng bằng Cookie Authentication và phân quyền theo vai trò (Role-Based Authorization).
+
+Xác thực người dùng (Authentication)
+
+Tôi cấu hình Cookie Authentication trong ASP.NET Core để quản lý phiên đăng nhập.
+
+Các bước thực hiện:
+
+Cấu hình Authentication và Authorization trong Program.cs.
+Thiết lập đường dẫn chuyển hướng khi người dùng chưa đăng nhập (/Account/Login).
+Xây dựng giao diện đăng nhập bằng Razor View.
+Kiểm tra tài khoản từ cơ sở dữ liệu.
+Tạo Claims lưu thông tin người dùng sau khi đăng nhập thành công.
+Phát hành Cookie để duy trì trạng thái đăng nhập.
+Xây dựng chức năng đăng xuất và hủy Cookie phiên làm việc.
+Kết quả
+
+Người dùng đăng nhập thành công sẽ được cấp Cookie xác thực và có thể truy cập các khu vực quản trị của hệ thống.
+
+Quản lý danh tính người dùng bằng Claims
+
+Hệ thống sử dụng cơ chế Claims-Based Identity của ASP.NET Core để lưu trữ thông tin người dùng.
+
+Thông tin được lưu gồm:
+
+Username
+Họ tên
+Vai trò (Role)
+
+Ví dụ:
+
+Admin
+Editor
+
+Nhờ đó hệ thống có thể nhận diện người dùng đang đăng nhập và hiển thị thông tin cá nhân trên giao diện quản trị.
+
+Phân quyền truy cập (Authorization)
+
+Sau khi hoàn thành xác thực, tôi triển khai phân quyền truy cập bằng Attribute [Authorize].
+
+Bảo vệ khu vực quản trị
+
+Các Controller quản trị được gắn:
+
+[Authorize]
+
+Chỉ người dùng đã đăng nhập mới được phép truy cập.
+
+Phân quyền theo vai trò
+
+Một số khu vực nhạy cảm được giới hạn quyền truy cập:
+
+[Authorize(Roles = "Admin")]
+
+Ví dụ:
+
+Quản lý người dùng chỉ dành cho Admin.
+Editor chỉ được phép quản lý nội dung bài viết.
+Kết quả
+Người dùng chưa đăng nhập sẽ tự động chuyển về trang Login.
+Người dùng không đủ quyền sẽ bị từ chối truy cập.
+Hiển thị thông tin người dùng
+
+Sau khi đăng nhập thành công, hệ thống hiển thị:
+
+Họ tên người dùng
+Vai trò hiện tại
+Nút đăng xuất
+
+Điều này giúp cải thiện trải nghiệm sử dụng và hỗ trợ quản trị hệ thống hiệu quả hơn.
+
+Xử lý truy cập trái phép
+
+Tôi xây dựng trang Access Denied (403) để xử lý trường hợp người dùng cố gắng truy cập chức năng vượt quá quyền hạn được cấp.
+
+Chức năng
+Thông báo người dùng không có quyền truy cập.
+Hạn chế hiển thị lỗi kỹ thuật ra bên ngoài.
+Tăng tính chuyên nghiệp và thân thiện cho hệ thống.
+Kỹ năng và công nghệ áp dụng
+ASP.NET Core MVC
+Cookie Authentication
+Claims-Based Identity
+Authorization
+Role-Based Authorization
+Entity Framework Core
+SQL Server
+Razor View
+Kết quả đạt được
+
+Sau buổi học, tôi đã xây dựng hoàn chỉnh hệ thống bảo mật cơ bản cho CMS, bao gồm:
+
+Đăng nhập và đăng xuất người dùng.
+Quản lý phiên làm việc bằng Cookie.
+Kiểm tra xác thực người dùng.
+Phân quyền theo vai trò Admin và Editor.
+Bảo vệ các khu vực quản trị.
+Hiển thị thông tin người dùng đăng nhập.
+Xử lý truy cập trái phép bằng trang Access Denied.
+
+Hệ thống hiện đáp ứng được các yêu cầu bảo mật cơ bản của một ứng dụng quản trị nội dung (CMS) và tạo nền tảng để triển khai các kỹ thuật nâng cao như mã hóa mật khẩu bằng BCrypt, JWT Authentication và bảo mật API trong các giai đoạn tiếp theo.
+
