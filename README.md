@@ -293,7 +293,7 @@ Kết quả:
 * Hiểu và áp dụng hiệu quả mô hình làm việc của Entity Framework Core.
 * Hoàn thiện nền tảng dữ liệu cho các module quản trị nội dung của hệ thống CMS.
 
-Buổi 3 – Phát triển chức năng quản lý dữ liệu với LINQ và Entity Framework Core
+Buổi 4 – Phát triển chức năng quản lý dữ liệu với LINQ và Entity Framework Core
 Mô tả
 
 Triển khai các chức năng truy vấn và quản lý dữ liệu cho hệ thống CMS bằng Entity Framework Core và LINQ, đồng thời hoàn thiện các thao tác CRUD cho module Danh mục và Bài viết.
