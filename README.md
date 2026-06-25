@@ -167,4 +167,129 @@ Xây dựng tầng truy cập dữ liệu cho hệ thống CMS bằng Entity Fra
 * LINQ
 * Dependency Injection
 * Code First Migration
+# Buổi 3 – Truy vấn dữ liệu với LINQ và triển khai CRUD hoàn chỉnh
+
+## Mục tiêu
+
+Triển khai các thao tác truy vấn và quản lý dữ liệu trên hệ thống CMS bằng Entity Framework Core, áp dụng LINQ để xử lý dữ liệu và xây dựng đầy đủ các chức năng CRUD cho module Danh mục (Category).
+
+## Công việc thực hiện
+
+### 1. Truy vấn dữ liệu với LINQ
+
+Áp dụng LINQ để thao tác dữ liệu từ SQL Server thông qua Entity Framework Core:
+
+* Sử dụng `Where()` để lọc dữ liệu theo điều kiện.
+* Sử dụng `OrderBy()` và `OrderByDescending()` để sắp xếp dữ liệu.
+* Sử dụng `FirstOrDefault()` để truy xuất bản ghi đơn lẻ.
+* Xây dựng chức năng lọc bài viết theo danh mục động thông qua tham số URL.
+
+Ví dụ:
+
+* Lọc bài viết theo `CategoryId`.
+* Sắp xếp bài viết theo ngày đăng mới nhất.
+* Hiển thị danh sách bài viết theo từng chuyên mục.
+
+### 2. Tối ưu truy vấn với Eager Loading
+
+Sử dụng kỹ thuật Eager Loading thông qua `Include()` để lấy dữ liệu từ các bảng liên kết.
+
+Các quan hệ đã xử lý:
+
+* Post → Category
+* Product → CategoryProduct
+* Order → Customer
+* OrderDetail → Product
+
+Kết quả:
+
+* Hiển thị được thông tin danh mục ngay trong danh sách bài viết.
+* Hạn chế lỗi dữ liệu null khi truy cập Navigation Property.
+* Giảm số lượng truy vấn phát sinh trong quá trình hiển thị dữ liệu.
+
+### 3. Xây dựng chức năng xem chi tiết dữ liệu (Details)
+
+Triển khai chức năng xem chi tiết bài viết:
+
+* Truy vấn dữ liệu theo khóa chính (Id).
+* Kết hợp `Include()` để lấy thông tin liên quan.
+* Xử lý trường hợp không tìm thấy dữ liệu bằng `NotFound()`.
+
+Kết quả:
+
+* Người dùng có thể xem nội dung đầy đủ của bài viết.
+* Hệ thống xử lý an toàn khi URL không hợp lệ.
+
+### 4. Triển khai chức năng thêm mới dữ liệu (Create)
+
+Xây dựng quy trình thêm dữ liệu mới vào hệ thống:
+
+* Thiết kế Form nhập liệu bằng Razor View.
+* Nhận dữ liệu từ người dùng thông qua HTTP POST.
+* Sử dụng:
+
+  * `_context.Add()`
+  * `_context.SaveChanges()`
+
+Kết quả:
+
+* Dữ liệu được lưu trực tiếp vào SQL Server.
+* Giao diện tự động chuyển về trang danh sách sau khi lưu thành công.
+
+### 5. Triển khai chức năng xóa dữ liệu (Delete)
+
+Xây dựng chức năng xóa danh mục:
+
+* Tìm dữ liệu bằng `Find()`.
+* Đánh dấu xóa bằng `Remove()`.
+* Ghi thay đổi xuống cơ sở dữ liệu bằng `SaveChanges()`.
+
+Bổ sung:
+
+* Hộp thoại xác nhận trước khi xóa bằng JavaScript.
+* Xử lý trường hợp dữ liệu không tồn tại.
+
+### 6. Triển khai chức năng cập nhật dữ liệu (Edit)
+
+Xây dựng quy trình chỉnh sửa dữ liệu theo mô hình GET/POST:
+
+#### GET
+
+* Tìm dữ liệu theo Id.
+* Hiển thị thông tin hiện tại lên Form.
+
+#### POST
+
+* Nhận dữ liệu đã chỉnh sửa.
+* Cập nhật thông tin bằng `Update()`.
+* Lưu thay đổi bằng `SaveChanges()`.
+
+Kết quả:
+
+* Người dùng có thể chỉnh sửa thông tin trực tiếp trên giao diện quản trị.
+* Dữ liệu được đồng bộ với SQL Server sau khi cập nhật.
+
+## Kỹ thuật và công nghệ áp dụng
+
+* ASP.NET Core MVC
+* Entity Framework Core
+* LINQ Query
+* Eager Loading (Include)
+* SQL Server
+* Razor View Engine
+* CRUD Operations
+* Dependency Injection
+
+## Kết quả đạt được
+
+* Thay thế hoàn toàn dữ liệu giả bằng dữ liệu thực từ SQL Server.
+* Thành thạo các kỹ thuật truy vấn dữ liệu với LINQ.
+* Xây dựng hoàn chỉnh các chức năng:
+
+  * Create
+  * Read
+  * Update
+  * Delete
+* Hiểu và áp dụng hiệu quả mô hình làm việc của Entity Framework Core.
+* Hoàn thiện nền tảng dữ liệu cho các module quản trị nội dung của hệ thống CMS.
 
