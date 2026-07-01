@@ -1,88 +1,107 @@
-﻿import React, { useState, useEffect } from 'react';
-import productService from '../services/productService';
-import { useNavigate } from 'react-router-dom';
-const ProductList = ({ categoryId }) => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-    //useEffect(() => {
-    //    const fetchProducts = async () => {
-    //        try {
-    //            setLoading(true);
-    //            const data = await productService.getAllProducts();
-    //            setProducts(data);
-    //        } catch (error) {
-    //            console.error("L?i khi t?i danh sách s?n ph?m:", error);
-    //        } finally {
-    //            setLoading(false);
-    //        }
-    //    };
+﻿import React, { useState } from 'react';
+import ProductCard from './ProductCard';
 
-    //    fetchProducts();
-    //}, []);
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
+const ProductList = ({ products = [] }) => {
+    const [currentPage, setCurrentPage] = useState(1);
 
-                let data;
+    const productsPerPage = 6;
 
-                if (categoryId) {
-                    data = await productService.getProductsByCategory(categoryId);
-                } else {
-                    data = await productService.getAllProducts();
-                }
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
 
-                setProducts(data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const currentProducts = products.slice(
+        indexOfFirstProduct,
+        indexOfLastProduct
+    );
 
-        fetchProducts();
-    }, [categoryId]);
-    if (loading) {
-        return <div className="text-center my-4">?ang t?i danh sách s?n ph?m th?i trang...</div>;
-    }
-    const API_URL = "https://localhost:7284";
+    const totalPages = Math.ceil(products.length / productsPerPage);
 
     return (
-        <div className="row">
-            {products.length === 0 ? (
-                <div className="col-12"><p className="text-muted">Ch?a có s?n ph?m nào trong h? th?ng.</p></div>
-            ) : (
-                products.map((item) => (
-                    <div className="col-md-6 mb-4" key={item.id}>
-                        <div className="card h-100 shadow-sm border">
-                            <div className="card-body">
-                                <img
-                                    src={`${API_URL}${item.imageUrl}`}
-                                    alt={item.name}
-                                    style={{ width: '300px', height: 'auto' }}
-                                />
-                                <h5 className="card-title font-weight-bold text-dark">{item.name}</h5>
-                                <p className="card-text text-danger font-weight-bold">
-                                    {/* Hàm t? ??ng chuy?n s? thành ??nh d?ng ti?n t? Vi?t Nam (VND) */}
-                                    Giá bán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                </p>
-                                <p className="card-text small text-muted">Số lượng tồn kho: {item.stockQuantity} sản phẩm</p>
-                            </div>
-                            <div className="card-footer bg-transparent border-top-0">
-                                <button
-                                    className="btn btn-outline-primary btn-block btn-sm"
-                                    onClick={() => navigate(`/product/${item.id}`)}
-                                >
-                                    <i className="fa-solid fa-eye mr-1"></i>
-                                    Xem chi tiết
-                                </button>
-                            </div>
-                        </div>
+        <>
+            <div className="row g-4">
+                {products.length === 0 ? (
+                    <div className="col-12">
+                        <p className="text-muted">
+                            Chưa có sản phẩm nào trong hệ thống.
+                        </p>
                     </div>
-                ))
+                ) : (
+                    currentProducts.map((item) => (
+                        <div
+                            className="col-lg-4 col-md-6 col-sm-6"
+                            key={item.id}
+                        >
+                            <ProductCard product={item} />
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-5">
+                    <nav>
+                        <ul className="pagination">
+
+                            {/* Prev */}
+                            <li
+                                className={`page-item ${currentPage === 1 ? "disabled" : ""
+                                    }`}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() =>
+                                        setCurrentPage(currentPage - 1)
+                                    }
+                                >
+                                    &laquo;
+                                </button>
+                            </li>
+
+                            {/* Số trang */}
+                            {Array.from(
+                                { length: totalPages },
+                                (_, index) => (
+                                    <li
+                                        key={index + 1}
+                                        className={`page-item ${currentPage === index + 1
+                                                ? "active"
+                                                : ""
+                                            }`}
+                                    >
+                                        <button
+                                            className="page-link"
+                                            onClick={() =>
+                                                setCurrentPage(index + 1)
+                                            }
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    </li>
+                                )
+                            )}
+
+                            {/* Next */}
+                            <li
+                                className={`page-item ${currentPage === totalPages
+                                        ? "disabled"
+                                        : ""
+                                    }`}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() =>
+                                        setCurrentPage(currentPage + 1)
+                                    }
+                                >
+                                    &raquo;
+                                </button>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
             )}
-        </div>
+        </>
     );
 };
 

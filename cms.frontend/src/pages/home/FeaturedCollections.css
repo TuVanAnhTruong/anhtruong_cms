@@ -1,0 +1,103 @@
+.featured-collections {
+    background: #fff;
+}
+
+.title-line {
+    width: 70px;
+    height: 2px;
+    background: #c8a96b;
+    margin-top: 15px;
+}
+
+.collection-card {
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.large-card {
+    height: 500px;
+}
+
+.sport-card {
+    height: 250px;
+}
+
+.collection-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: inherit;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s ease;
+}
+
+.collection-card:hover::before {
+    transform: scale(1.08);
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( to top, rgba(0, 0, 0, 0.7), transparent );
+}
+
+.overlay-horizontal {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( to right, rgba(0, 0, 0, 0.7), transparent );
+}
+
+.card-content {
+    position: absolute;
+    left: 40px;
+    bottom: 40px;
+    color: #fff;
+    z-index: 2;
+}
+
+    .card-content h3 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .card-content p {
+        margin: 12px 0 20px;
+        opacity: 0.9;
+    }
+
+    .card-content span {
+        border-bottom: 1px solid #fff;
+        padding-bottom: 5px;
+        letter-spacing: 2px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+.middle-content {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 991px) {
+    .large-card {
+        height: 350px;
+    }
+
+    .sport-card {
+        height: 220px;
+    }
+
+    .card-content {
+        left: 25px;
+        bottom: 25px;
+    }
+
+    .middle-content {
+        left: 25px;
+    }
+}

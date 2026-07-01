@@ -33,8 +33,8 @@ namespace CMS.Backend.Controllers
                     p.Id,
                     p.Quantity,
                     p.UnitPrice,
-                    OrderId = p.Order.Id, // Lấy tên danh mục thay vì chỉ lấy ID
-                    ProductId= p.Product.Id
+                    OrderId = p.Order != null ? p.Order.Id : 0, // Tránh null reference
+                    ProductId = p.Product != null ? p.Product.Id : 0
                 })
                 .ToList();
 

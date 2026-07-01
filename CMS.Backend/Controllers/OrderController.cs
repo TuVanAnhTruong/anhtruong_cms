@@ -1,12 +1,8 @@
-﻿/*
- * Ho va ten: Tu Van Anh Truong
- * Mssv: 2123110486
- * Ngay tao: 29/05/2026
- */
+﻿using CMS.Backend.Services;
 using CMS.Data;
 using CMS.Data.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -14,79 +10,209 @@ namespace CMS.Backend.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        // 4. Khai báo biến kết nối Database
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        // 5. Hàm khởi tạo (Constructor): "Tiêm" kết nối Database vào để sử dụng
-        public OrderController(ApplicationDbContext context)
+        public OrderController(
+            ApplicationDbContext context,
+            EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
-        // 1. Chỉ định đây là phương thức GET (Dùng để lấy dữ liệu)
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            // Lấy dữ liệu từ bảng Orders
-            var order = _context.Orders
-                .OrderByDescending(p => p.Id) // Sắp xếp bài mới nhất lên đầu
-                .Select(p => new {            // "Gọt tỉa" dữ liệu: chỉ lấy những trường cần thiết
-                    p.Id,
-                    p.OrderDate,
-                    p.Status,
-                    p.Notes,
-                    Customer = p.Customer.Id, // Lấy tên danh mục thay vì chỉ lấy ID
-
-                })
-                .ToList();
-
-            // Trả về kết quả cho Frontend kèm mã trạng thái 200 (Thành công)
-            return Ok(order);
-        }
+        //=========================================================
+        // TẠO ĐƠN HÀNG
+        //=========================================================
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderInputDTO input)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderInputDto dto)
         {
-            // 1. Kiểm tra kịch bản lỗi bảo vệ: Nếu dữ liệu truyền lên trống rỗng
-            if (input == null)
+            if (dto == null || dto.OrderDetails == null || dto.OrderDetails.Count == 0)
             {
-                return BadRequest(new { message = "Dữ liệu đơn hàng không hợp lệ" });
+                return BadRequest(new
+                {
+                    message = "Giỏ hàng đang trống!"
+                });
             }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            Order newOrder;
 
             try
             {
-                // Bước A: Tự động khởi tạo cấu trúc thực thể Đơn hàng mới
-                // LƯU Ý: Đã hiệu chỉnh bỏ trường TotalAmount, dùng trường [Notes] số nhiều theo đúng hình ảnh thực tế
-                var newOrder = new Order
+                //==========================
+                // Tạo Order
+                //==========================
+                newOrder = new Order
                 {
-                    OrderDate = DateTime.Now, // Tự động lấy ngày giờ thực tế máy tính lúc mua
-                    CustomerId = input.CustomerId,
-                    Status = 0,               // 0: Mặc định đơn hàng mới ở trạng thái "Chờ xử lý"
-                    Notes = input.Notes
+                    CustomerId = dto.CustomerId,
+                    OrderDate = DateTime.Now,
+                    Status = 0,
+                    Notes = dto.Notes
                 };
 
-                // Bước B: Thêm vào bảng tạm và chốt lưu xuống SQL Server
                 _context.Orders.Add(newOrder);
-                await _context.SaveChangesAsync(); // Ép hệ thống sinh ra mã ID Đơn hàng tự động tăng
 
-                // Bước C: Trả về mã thành công 201 Created và gửi ngược lại mã ID đơn hàng vừa tạo
-                return StatusCode(201, new
+                await _context.SaveChangesAsync();
+
+                //==========================
+                // Kiểm tra tồn kho
+                //==========================
+                foreach (var item in dto.OrderDetails)
                 {
-                    message = "Đặt hàng thành công!",
-                    orderId = newOrder.Id
-                });
+                    var product = await _context.Products
+                        .FirstOrDefaultAsync(x => x.Id == item.ProductId);
+
+                    if (product == null)
+                    {
+                        await transaction.RollbackAsync();
+
+                        return NotFound(new
+                        {
+                            message = $"Không tìm thấy sản phẩm {item.ProductId}"
+                        });
+                    }
+
+                    if (product.StockQuantity < item.Quantity)
+                    {
+                        await transaction.RollbackAsync();
+
+                        return BadRequest(new
+                        {
+                            message = $"Sản phẩm {product.Name} chỉ còn {product.StockQuantity} sản phẩm."
+                        });
+                    }
+
+                    // Trừ kho
+                    product.StockQuantity -= item.Quantity;
+
+                    // Chi tiết đơn hàng
+                    _context.OrderDetails.Add(new OrderDetail
+                    {
+                        OrderId = newOrder.Id,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi xử lý tạo đơn hàng ngầm", detail = ex.Message });
+                await transaction.RollbackAsync();
+
+                return StatusCode(500, new
+                {
+                    message = ex.Message
+                });
+            }
+
+            //----------------------------------------------------
+            // Gửi email (không ảnh hưởng đến việc lưu đơn)
+            //----------------------------------------------------
+            try
+            {
+                var customer = await _context.Customers
+                    .FirstOrDefaultAsync(x => x.Id == dto.CustomerId);
+
+                if (customer == null)
+                {
+                    Console.WriteLine("Không tìm thấy khách hàng.");
+                }
+                else if (string.IsNullOrWhiteSpace(customer.Email))
+                {
+                    Console.WriteLine("Khách hàng chưa có Email.");
+                }
+                else
+                {
+                    decimal total = dto.OrderDetails.Sum(x =>
+                        x.Quantity * x.UnitPrice);
+
+                    Console.WriteLine("====================================");
+                    Console.WriteLine($"Bắt đầu gửi mail...");
+                    Console.WriteLine($"Người nhận : {customer.Email}");
+                    Console.WriteLine($"Tên KH     : {customer.FullName}");
+                    Console.WriteLine($"Mã đơn     : {newOrder.Id}");
+                    Console.WriteLine($"Tổng tiền  : {total}");
+                    Console.WriteLine("====================================");
+
+                    await _emailService.SendOrderEmail(
+                        customer.Email,
+                        customer.FullName,
+                        newOrder.Id,
+                        total);
+
+                    Console.WriteLine("ĐÃ GỬI EMAIL THÀNH CÔNG");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("===== LỖI GỬI EMAIL =====");
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine("=========================");
+            }
+
+            return StatusCode(201, new
+            {
+                message = "Đặt hàng thành công!",
+                orderId = newOrder.Id
+            });
+        }
+
+        //=========================================================
+        // LẤY ĐƠN HÀNG CỦA KHÁCH
+        //=========================================================
+        [HttpGet("customer/{customerId}")]
+        public async Task<IActionResult> GetOrdersByCustomer(int customerId)
+        {
+            try
+            {
+                var orders = await _context.Orders
+                    .Where(o => o.CustomerId == customerId)
+                    .OrderByDescending(o => o.Id)
+                    .Select(o => new
+                    {
+                        id = o.Id,
+                        orderDate = o.OrderDate,
+                        status = o.Status,
+                        notes = o.Notes,
+                        totalAmount = o.OrderDetails.Sum(d => d.Quantity * d.UnitPrice)
+                    })
+                    .ToListAsync();
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
+
     }
 
-    // LỚP DTO TRUNG GIAN ĐỂ HỨNG DỮ LIỆU TỪ FRONTEND TRUYỀN LÊN
-    public class OrderInputDTO
+    //=========================================================
+    // DTO
+    //=========================================================
+
+    public class OrderInputDto
     {
         public int CustomerId { get; set; }
-        public string Notes { get; set; }
+
+        public string? Notes { get; set; }
+
+        public List<OrderDetailInputDto> OrderDetails { get; set; } = new();
+    }
+
+    public class OrderDetailInputDto
+    {
+        public int ProductId { get; set; }
+
+        public int Quantity { get; set; }
+
+        public decimal UnitPrice { get; set; }
     }
 }
-

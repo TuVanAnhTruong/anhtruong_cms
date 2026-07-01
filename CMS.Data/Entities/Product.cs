@@ -30,10 +30,20 @@ namespace CMS.Data.Entities
 
         public string? ImageUrl { get; set; }
 
+        public bool IsFeatured { get; set; } = false;      // Nổi bật
+
+        public bool IsNew { get; set; } = false;           // Mới
+
+        public bool IsBestSeller { get; set; } = false;    // Bán chạy
+
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal DiscountPercent { get; set; } = 0; // Giảm giá %
+
         // Khóa ngoại nối tới CategoryProduct
         public int CategoryProductId { get; set; }
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

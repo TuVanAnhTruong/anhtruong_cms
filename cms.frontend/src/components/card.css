@@ -1,0 +1,18 @@
+.product-card:hover .product-image {
+    transform: scale(1.08);
+}
+
+.product-card:hover .cart-btn {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.detail-btn:hover {
+    background: #111;
+    color: #fff !important;
+}
+
+.cart-btn:hover {
+    background: #c59d5f !important;
+    color: white;
+}

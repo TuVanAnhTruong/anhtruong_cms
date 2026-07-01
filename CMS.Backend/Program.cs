@@ -1,7 +1,9 @@
-﻿using CMS.Data;
+﻿using CMS.Backend.Services;
+using CMS.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+
 //using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +58,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-
+builder.Services.AddScoped<EmailService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

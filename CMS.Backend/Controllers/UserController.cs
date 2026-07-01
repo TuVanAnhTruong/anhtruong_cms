@@ -36,15 +36,17 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public IActionResult Create(User model)
         {
-            // Kiểm tra xem tên đăng nhập đã tồn tại chưa
             var checkExist = _context.Users.Any(u => u.Username == model.Username);
+
             if (checkExist)
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập này đã có người dùng!");
                 return View(model);
             }
 
-            // Lưu User mới vào Database
+            // Mã hóa mật khẩu trước khi lưu
+            model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+
             _context.Users.Add(model);
             _context.SaveChanges();
 
@@ -70,12 +72,14 @@ namespace CMS.Backend.Controllers
             if (existingUser == null) return NotFound();
 
             // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
-            if (!string.IsNullOrEmpty(NewPassword))
+            if (!string.IsNullOrWhiteSpace(NewPassword))
             {
-                model.PasswordHash = NewPassword; // Sau này sẽ mã hóa tại đây
+                // Băm mật khẩu mới
+                model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(NewPassword);
             }
             else
             {
+                // Giữ nguyên mật khẩu cũ
                 model.PasswordHash = existingUser.PasswordHash;
             }
 

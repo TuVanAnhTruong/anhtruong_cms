@@ -1,4 +1,26 @@
-﻿@model CMS.Data.Entities.Post
+﻿
+@section Scripts {
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+    <script>
+
+        ClassicEditor
+        .create(document.querySelector('#editor'),{
+
+            ckfinder:{
+                uploadUrl:'/Post/UploadImage'
+            }
+
+        })
+        .catch(error=>{
+            console.log(error);
+        });
+
+    </script>
+
+}
+@model CMS.Data.Entities.Post
 
 @{
     Layout = "_LayoutAdmin";
@@ -34,7 +56,10 @@
 
                 <div class="col-12 mb-3">
                     <label asp-for="Content" class="form-label fw-bold">Nội dung bài viết</label>
-                    <textarea asp-for="Content" class="form-control" rows="6" placeholder="Nhập nội dung chi tiết bài viết..." required></textarea>
+                    <textarea asp-for="Content"
+          id="editor"
+          class="form-control"
+          rows="6"></textarea>
                 </div>
 
                 <div class="col-md-6 mb-4">

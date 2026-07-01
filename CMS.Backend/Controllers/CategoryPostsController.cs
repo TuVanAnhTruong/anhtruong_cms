@@ -1,0 +1,41 @@
+﻿using CMS.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace CMS.Backend.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CategoryPostsController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+
+
+        public CategoryPostsController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+
+        /// <summary>
+        /// API Endpoint: GET https://localhost:7284/api/CategoryPosts
+        /// Lấy toàn bộ danh mục bài viết tin tức từ SQL Server
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var categories = await _context.Categories.ToListAsync();
+                return Ok(categories); // Trả về HTTP 200 kèm mảng JSON danh mục thật
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Lỗi hệ thống SQL Server: {ex.Message}");
+            }
+        }
+    }
+
+}
+

@@ -3,14 +3,17 @@
  * Mssv: 2123110486
  * Ngay tao: 22/05/2026
  */
+using Microsoft.AspNetCore.Authorization;
 using CMS.Data;
 using CMS.Data.Entities;
 //using CMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Rendering;
+//using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,10 +24,23 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            // Lấy dữ liệu THẬT từ bảng Products trong SQL
-            var data = _context.Products.ToList();
+            int pageSize = 5; // số sản phẩm / trang
+
+            var query = _context.Products
+                .OrderBy(p => p.Id);
+
+            int totalItems = query.Count();
+
+            var data = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
             return View(data);
         }
 

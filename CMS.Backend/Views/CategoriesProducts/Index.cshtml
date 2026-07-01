@@ -4,12 +4,17 @@
     Layout = "_LayoutAdmin";
 }
 <h2 class="text-primary">DANH SÁCH DANH MỤC SẢN PHẨM (DỮ LIỆU MẪU)</h2>
+<a asp-action="Create" class="btn btn-success">
+    <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+</a>
 <table class="table table-bordered">
     <thead>
         <tr>
             <th>ID</th>
             <th>Tên danh mục sản phẩm</th>
             <th>Mô tả</th>
+            <th>Thao Tác</th>
+
         </tr>
     </thead>
     <tbody>
@@ -19,6 +24,18 @@
                 <td>@item.Id</td>
                 <td>@item.Name</td>
                 <td>@item.Description</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning btn-sm">
+                        Sửa
+                    </a>
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Bạn có chắc muốn xóa danh mục sản phẩm này không?')">
+                        Xóa
+                    </a>
             </tr>
         }
     </tbody>

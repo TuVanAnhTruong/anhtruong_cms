@@ -3,13 +3,15 @@
  * Mssv: 2123110486
  * Ngay tao: 28/05/2026
  */
+using CMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CMS.Data;
 using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -31,5 +31,7 @@ namespace CMS.Data.Entities
         public string Password { get; set; } // Lưu mật khẩu thô theo yêu cầu tối giản
 
         public virtual ICollection<Order>? Orders { get; set; }
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
     }
 }

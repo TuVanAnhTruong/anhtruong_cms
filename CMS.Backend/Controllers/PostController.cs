@@ -5,12 +5,14 @@
  */
 using CMS.Data;
 using CMS.Data.Entities; // Quan trọng: Phải có dòng này để dùng lớp Post
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -144,17 +146,27 @@ namespace CMS.Backend.Controllers
         }
         // Edit: Cập nhật một bài viết (POST)
         // POST: Thực hiện cập nhật
+        //======================================================
+        // Upload ảnh từ CKEditor
+        //======================================================
         [HttpPost]
         public IActionResult Edit(Post model, IFormFile uploadImage)
         {
-            // Bước 1: Kiểm tra xem người dùng có chọn file ảnh mới không
             if (uploadImage != null && uploadImage.Length > 0)
             {
-                // Thực hiện quy trình upload giống như trang Create
-                string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                string folder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "uploads");
 
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                string fileName = Guid.NewGuid().ToString() +
+                                  Path.GetExtension(uploadImage.FileName);
+
                 string filePath = Path.Combine(folder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -162,21 +174,23 @@ namespace CMS.Backend.Controllers
                     uploadImage.CopyTo(stream);
                 }
 
-                // Cập nhật đường dẫn ảnh mới vào model
                 model.ImageUrl = "/uploads/" + fileName;
             }
             else
             {
-                // Bước quan trọng: Nếu không upload ảnh mới, chúng ta phải giữ lại ảnh cũ
-                // Chúng ta cần lấy lại giá trị ImageUrl từ Database để tránh bị ghi đè thành rỗng
-                var oldPost = _context.Posts.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
-                if (oldPost != null && string.IsNullOrEmpty(model.ImageUrl))
+                var oldPost = _context.Posts
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.Id == model.Id);
+
+                if (oldPost != null)
                 {
                     model.ImageUrl = oldPost.ImageUrl;
                 }
             }
+
             _context.Posts.Update(model);
             _context.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

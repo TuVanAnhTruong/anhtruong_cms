@@ -6,9 +6,11 @@
 using CMS.Data;
 using CMS.Data.Entities; // Kết nối tới lớp dữ liệu bạn vừa tạo
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
